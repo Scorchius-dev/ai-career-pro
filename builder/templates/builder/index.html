@@ -1,34 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AI Cover Letter Builder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Generate a Cover Letter</h1>
-
-    <form method="POST">
-        {% csrf_token %}
-        <label>Select your CV:</label><br>
-        <select name="cv_id">
-            {% for cv in cvs %}
-                <option value="{{ cv.id }}">{{ cv.title }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
-
-        <label>Paste Job Description:</label><br>
-        <textarea name="job_description" rows="10" cols="50"></textarea>
-        <br><br>
-
-        <button type="submit">Generate Letter</button>
-    </form>
-
-    {% if letter %}
-        <hr>
-        <h2>Your Generated Letter:</h2>
-        <div style="white-space: pre-wrap; background: #f4f4f4; padding: 20px;">
-            {{ letter }}
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand h1" href="{% url 'index' %}">AI Career Pro</a>
+        <div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+                <a href="{% url 'cv_create' %}" class="btn btn-light btn-sm me-3">+ New CV</a>
+                <span class="text-white me-3">Hi, {{ user.username }}</span>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-light btn-sm">Sign Up</a>
+            {% endif %}
         </div>
-    {% endif %}
+    </div>
+</nav>
+
+    <div class="container">
+        {% block content %}
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card shadow-sm p-4">
+                    <h3>Generate Letter</h3>
+                    <hr>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Select your CV</label>
+                            <select name="cv_id" class="form-select">
+                                {% for cv in cvs %}
+                                    <option value="{{ cv.id }}">{{ cv.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Job Description</label>
+                            <textarea name="job_description" class="form-control" rows="8" placeholder="Paste the job ad here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Generate Tailored Letter</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                {% if letter %}
+                    <div class="card shadow-sm p-4">
+                        <h3>Your Result</h3>
+                        <hr>
+                        <div class="p-3 bg-white border rounded" style="white-space: pre-wrap;">{{ letter }}</div>
+                    </div>
+                {% else %}
+                    <div class="text-center mt-5 text-muted">
+                        <p>Welcome! Select a CV and paste a job description to begin.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
