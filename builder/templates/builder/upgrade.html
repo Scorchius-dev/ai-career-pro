@@ -1,0 +1,118 @@
+{% extends 'builder/index.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2">Premium Career Builder</h2>
+                        <p class="text-muted mb-0">
+                            Unlimited tailored cover letters, premium PDF export,
+                            and subscription billing you can manage anytime.
+                        </p>
+                        <p class="small text-muted mb-0 mt-2">
+                            Price shown in GBP. Billed monthly via Stripe.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <span class="badge bg-primary fs-6">{{ price_label }}/month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-10">
+            <div class="card shadow-sm p-4">
+                <h4 class="mb-3">What You Get</h4>
+                <ul class="mb-4">
+                    <li>Download polished PDFs for every generated cover letter.</li>
+                    <li>Priority generation experience for frequent applications.</li>
+                    <li>Simple monthly billing with secure Stripe payments.</li>
+                    <li>Cancel or update payment details anytime in the billing portal.</li>
+                </ul>
+
+                {% if profile.is_premium %}
+                <div class="alert alert-success" role="alert">
+                    Your subscription is active.
+                    {% if profile.current_period_end %}
+                    Current period ends on {{ profile.current_period_end|date:"M d, Y" }}.
+                    {% endif %}
+                </div>
+                <form method="post" action="{% url 'billing_portal' %}" id="billing-portal-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary" id="billing-portal-btn">
+                        Manage Billing
+                    </button>
+                </form>
+                {% else %}
+                <form method="post" action="{% url 'create_checkout_session' %}" id="checkout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg" id="checkout-btn">
+                        Start Premium Subscription
+                    </button>
+                </form>
+                <p class="text-muted small mt-3 mb-0">
+                    By subscribing, you agree to recurring monthly billing via Stripe.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-md-10">
+            <div class="card shadow-sm p-4">
+                <h4 class="mb-3">Billing Summary</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <div class="text-muted small">Plan</div>
+                        <strong>Premium Monthly</strong>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <div class="text-muted small">Price</div>
+                        <strong>{{ price_label }}/month</strong>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <div class="text-muted small">Status</div>
+                        <strong>
+                            {% if profile.is_premium %}
+                            Active
+                            {% else %}
+                            Free Plan
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                {% if profile.current_period_end %}
+                <p class="small text-muted mb-0 mt-2">
+                    Next renewal date: {{ profile.current_period_end|date:"M d, Y" }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const checkoutForm = document.getElementById('checkout-form');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutForm && checkoutBtn) {
+        checkoutForm.addEventListener('submit', () => {
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = 'Redirecting to Stripe...';
+        });
+    }
+
+    const billingPortalForm = document.getElementById('billing-portal-form');
+    const billingPortalBtn = document.getElementById('billing-portal-btn');
+    if (billingPortalForm && billingPortalBtn) {
+        billingPortalForm.addEventListener('submit', () => {
+            billingPortalBtn.disabled = true;
+            billingPortalBtn.textContent = 'Opening portal...';
+        });
+    }
+</script>
+{% endblock %}

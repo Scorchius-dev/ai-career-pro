@@ -1,47 +1,50 @@
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
-# 1. Load the hidden environment variables
 load_dotenv()
 
-# 2. Get the key and check if it actually exists
-api_key = os.getenv('GEMINI_API_KEY')
+_api_key = os.getenv('GEMINI_API_KEY')
+_client = genai.Client(api_key=_api_key) if _api_key else None
 
-if api_key:
-    genai.configure(api_key=api_key)
-else:
-    print("WARNING: GEMINI_API_KEY not found in .env file")
+if not _api_key:
+    print('WARNING: GEMINI_API_KEY not found in .env file')
 
 
 def generate_cover_letter(cv_data, job_description):
-    """
-    Logic to communicate with Gemini AI.
-    Includes error handling to prevent project crashes.
-    """
-    # If no key, don't even try to call the AI
-    if not api_key:
-        return "Configuration Error: API Key is missing."
-
-    try:
-        # Use the latest stable model
-        model = genai.GenerativeModel('gemini-2.5-flash')
-
-        # Structured prompt for better results
-        prompt = (
-            f"Write a professional cover letter.\n\n"
-            f"CV DETAILS:\n{cv_data}\n\n"
-            f"JOB DESCRIPTION:\n{job_description}\n\n"
-            f"Keep it concise and professional."
+    if not _client:
+        return (
+            'Configuration Error: GEMINI_API_KEY is missing '
+            'from your .env file.'
         )
 
-        response = model.generate_content(prompt)
+    prompt = (
+        'You are an expert cover letter writer. '
+        'Write a professional, personalised cover letter tailored '
+        'to the specific job below. Use the candidate\'s real '
+        'details and achievements — do not invent facts.\n\n'
+        f'CANDIDATE CV:\n{cv_data}\n\n'
+        f'JOB DESCRIPTION:\n{job_description}\n\n'
+        'INSTRUCTIONS:\n'
+        '- Write in first person, confident and professional tone\n'
+        '- Open with a hook that specifically references the role '
+        'and company — avoid "I am writing to apply"\n'
+        '- Highlight 2\u20133 specific experiences or achievements '
+        'from the CV that match the requirements\n'
+        '- Show genuine enthusiasm for the company and role\n'
+        '- Close with a clear, proactive call to action\n'
+        '- 3\u20134 paragraphs, under 400 words\n'
+        '- Output the letter body only — no subject line, '
+        'no address header, no metadata'
+    )
 
+    try:
+        response = _client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
         if response and response.text:
             return response.text.strip()
-
-        return "AI returned an empty response."
-
-    except Exception as e:
-        # Catch errors and return a message instead of crashing
-        return f"AI Error: {str(e)}"
+        return 'AI returned an empty response.'
+    except Exception as exc:
+        return f'AI Error: {exc}'

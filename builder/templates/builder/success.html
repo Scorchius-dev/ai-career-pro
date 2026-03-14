@@ -1,0 +1,25 @@
+{% extends 'builder/index.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-success p-4 text-center">
+            <h2 class="text-success mb-3">Payment Received</h2>
+            <p class="lead mb-3">
+                Thanks, your payment was successful. Your premium access is being
+                activated now and should be ready in a moment.
+            </p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                {% if profile.stripe_customer_id %}
+                <form method="post" action="{% url 'billing_portal' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary">Manage Billing</button>
+                </form>
+                {% endif %}
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary">Generate Another Letter</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

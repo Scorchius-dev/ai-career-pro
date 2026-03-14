@@ -1,24 +1,11 @@
-"""
-URL configuration for core project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
-# Step 1: Add cv_update and cv_delete to your imports
 from builder.views import (
-    index, signup, cv_create, dashboard, cv_update, cv_delete
+    signup, index, dashboard, cv_create, cv_update, cv_delete,
+    letter_detail, letter_delete, export_pdf, upgrade_page,
+    create_checkout_session, create_billing_portal_session,
+    payment_success, payment_cancelled, stripe_webhook,
+    terms_page, privacy_page, refund_policy_page
 )
 
 urlpatterns = [
@@ -26,17 +13,38 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('signup/', signup, name='signup'),
 
-    # Create
-    path('cv/new/', cv_create, name='cv_create'),
-
-    # Read
+    # Home & Dashboard
+    path('', index, name='index'),
     path('dashboard/', dashboard, name='dashboard'),
 
-    # Update (The <int:pk> captures the ID of the CV you want to edit)
+    # CV Operations
+    path('cv/new/', cv_create, name='cv_create'),
     path('cv/<int:pk>/edit/', cv_update, name='cv_update'),
-
-    # Delete
     path('cv/<int:pk>/delete/', cv_delete, name='cv_delete'),
 
-    path('', index, name='index'),
+    # Letter Operations
+    path('letter/<int:pk>/', letter_detail, name='letter_detail'),
+    path('letter/<int:pk>/delete/', letter_delete, name='letter_delete'),
+    path('letter/<int:pk>/pdf/', export_pdf, name='export_pdf'),
+
+    # Stripe Payment Flow
+    path('upgrade/', upgrade_page, name='upgrade_page'),
+    path(
+        'upgrade/checkout/',
+        create_checkout_session,
+        name='create_checkout_session',
+    ),
+    path(
+        'billing/portal/',
+        create_billing_portal_session,
+        name='billing_portal',
+    ),
+    path('payment-success/', payment_success, name='payment_success'),
+    path('payment-cancelled/', payment_cancelled, name='payment_cancelled'),
+    path('stripe/webhook/', stripe_webhook, name='stripe_webhook'),
+
+    # Legal
+    path('terms/', terms_page, name='terms_page'),
+    path('privacy/', privacy_page, name='privacy_page'),
+    path('refund-policy/', refund_policy_page, name='refund_policy_page'),
 ]

@@ -2,6 +2,80 @@
 
 {% block content %}
 <div class="container mt-4">
+    {% if not cvs %}
+    <div class="alert alert-info d-flex justify-content-between align-items-center flex-wrap gap-2" role="alert">
+        <span>Start by creating your first CV profile to unlock faster letter generation.</span>
+        <a href="{% url 'cv_create' %}" class="btn btn-sm btn-primary">Create First CV</a>
+    </div>
+    {% endif %}
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm p-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h5 class="mb-1">Subscription</h5>
+                        {% if profile.is_premium %}
+                        <p class="mb-0 text-success">
+                            Active{% if profile.current_period_end %} until {{ profile.current_period_end|date:"M d, Y" }}{% endif %}.
+                        </p>
+                        {% else %}
+                        <p class="mb-0 text-muted">Free plan. Upgrade to unlock PDF exports.</p>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2">
+                        {% if profile.is_premium and profile.stripe_customer_id %}
+                        <form method="post" action="{% url 'billing_portal' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-sm">Manage Billing</button>
+                        </form>
+                        {% elif profile.is_premium %}
+                        <a href="{% url 'upgrade_page' %}" class="btn btn-outline-primary btn-sm">
+                            View Plan
+                        </a>
+                        {% else %}
+                        <a href="{% url 'upgrade_page' %}" class="btn btn-primary btn-sm">
+                            Upgrade
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Total CVs</span>
+                    <strong>{{ cv_count }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Total Letters</span>
+                    <strong>{{ letter_count }}</strong>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <form method="get" class="card shadow-sm p-3">
+                <label for="q" class="form-label mb-2">Find a letter quickly</label>
+                <div class="input-group">
+                    <input
+                        id="q"
+                        type="search"
+                        name="q"
+                        class="form-control"
+                        value="{{ letter_query }}"
+                        placeholder="Search by title, company, or text"
+                    >
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card shadow-sm p-4">
@@ -11,15 +85,15 @@
                 </div>
                 <ul class="list-group">
                     {% for cv in cvs %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ cv.title }}
-                            <div>
-                                <a href="{% url 'cv_update' cv.pk %}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
-                                <a href="{% url 'cv_delete' cv.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </div>
-                        </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ cv.title }}
+                        <div>
+                            <a href="{% url 'cv_update' cv.pk %}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                            <a href="{% url 'cv_delete' cv.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </li>
                     {% empty %}
-                        <li class="list-group-item text-muted">You haven't created a CV yet.</li>
+                    <li class="list-group-item text-muted">You haven't created a CV yet.</li>
                     {% endfor %}
                 </ul>
             </div>
@@ -30,12 +104,20 @@
                 <h4>My Saved Letters</h4>
                 <div class="list-group mt-3">
                     {% for letter in letters %}
-                        <div class="list-group-item">
-                            <h6 class="mb-1">{{ letter.job_title }} at {{ letter.company_name }}</h6>
-                            <small class="text-muted">{{ letter.created_at|date:"M d, Y" }}</small>
-                        </div>
+                    <a href="{% url 'letter_detail' letter.pk %}"
+                        class="list-group-item list-group-item-action shadow-sm mb-2 border rounded">
+                        <h6 class="mb-1 text-primary">{{ letter.job_title }} at {{ letter.company_name }}</h6>
+                        <small class="text-muted">Generated on {{ letter.created_at|date:"M d, Y" }}</small>
+                    </a>
                     {% empty %}
-                        <p class="text-muted">No letters generated yet.</p>
+                    <p class="text-muted mb-0">No letters match your current search.</p>
+                    {% if cvs %}
+                    <div class="mt-2">
+                        <a href="{% url 'index' %}" class="btn btn-sm btn-outline-primary">
+                            Generate Your First Letter
+                        </a>
+                    </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>

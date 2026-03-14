@@ -1,16 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class CV(models.Model):
-    # This links the CV to the user who created it
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    # The actual content of the CV
     title = models.CharField(
         max_length=200,
-        help_text="e.g., Software Engineer CV"
+        help_text="e.g., Software Engineer CV",
     )
+    summary = models.TextField(
+        blank=True,
+        help_text="A short personal statement about your career goals.",
+    )
+    phone_number = models.CharField(max_length=30, blank=True)
+    location = models.CharField(max_length=100, blank=True)
     education = models.TextField()
     experience = models.TextField()
     skills = models.TextField()
@@ -21,7 +26,6 @@ class CV(models.Model):
 
 class CoverLetter(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # Links the letter to the CV
     cv = models.ForeignKey(CV, on_delete=models.CASCADE)
     job_title = models.CharField(max_length=200)
     company_name = models.CharField(max_length=200)
@@ -30,3 +34,24 @@ class CoverLetter(models.Model):
 
     def __str__(self):
         return f"Letter for {self.job_title} at {self.company_name}"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_premium = models.BooleanField(default=False)
+    stripe_customer_id = models.CharField(max_length=255, blank=True)
+    stripe_subscription_id = models.CharField(max_length=255, blank=True)
+    subscription_status = models.CharField(max_length=50, blank=True)
+    current_period_end = models.DateTimeField(null=True, blank=True)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.get_or_create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    if hasattr(instance, 'profile'):
+        instance.profile.save()

@@ -2,19 +2,151 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-md-9">
         <div class="card shadow-sm p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Create Your CV</h2>
-                <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <h2 class="mb-1">
+                        {% if edit_mode %}Edit CV{% else %}Create Your CV{% endif %}
+                    </h2>
+                    <p class="text-muted small mb-0">
+                        The more detail you add, the stronger your AI-generated
+                        cover letters will be.
+                    </p>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                    Cancel
+                </a>
             </div>
-            <form method="post">
+
+            <form method="post" id="cv-form">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <!-- CV Name -->
+                <div class="mb-4 mt-3">
+                    <label class="form-label fw-semibold">
+                        CV Profile Name <span class="text-danger">*</span>
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">
+                        Give this CV a name so you can tell it apart from others
+                        (e.g. "Retail CV", "Developer CV").
+                    </div>
+                </div>
+
+                <!-- About You -->
+                <h5 class="text-primary border-bottom pb-2 mb-3">About You</h5>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Personal Statement</label>
+                    {{ form.summary }}
+                    {% if form.summary.errors %}
+                    <div class="text-danger small mt-1">{{ form.summary.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">
+                        Optional but highly recommended. A 2–3 sentence intro
+                        about who you are professionally. This opens your letter
+                        with a strong, personal hook.
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label class="form-label fw-semibold">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.phone_number.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Location</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.location.errors }}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">City and country, e.g. London, UK.</div>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <h5 class="text-primary border-bottom pb-2 mb-3">Education</h5>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Qualifications <span class="text-danger">*</span>
+                    </label>
+                    {{ form.education }}
+                    {% if form.education.errors %}
+                    <div class="text-danger small mt-1">{{ form.education.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">
+                        Include degree name, subject, institution, and year.
+                        Mention grades if strong.
+                    </div>
+                </div>
+
+                <!-- Experience -->
+                <h5 class="text-primary border-bottom pb-2 mb-3">Work Experience</h5>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Previous Roles <span class="text-danger">*</span>
+                    </label>
+                    {{ form.experience }}
+                    {% if form.experience.errors %}
+                    <div class="text-danger small mt-1">{{ form.experience.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">
+                        List each role with company, dates, and 2–3 bullet-point
+                        achievements. Specific numbers (e.g. "increased sales by 20%")
+                        produce much stronger letters.
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <h5 class="text-primary border-bottom pb-2 mb-3">Skills</h5>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Your Skills <span class="text-danger">*</span>
+                    </label>
+                    {{ form.skills }}
+                    {% if form.skills.errors %}
+                    <div class="text-danger small mt-1">{{ form.skills.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">
+                        Technical tools, soft skills, languages — list anything
+                        relevant. The AI matches these to the job description.
+                    </div>
+                </div>
+
                 <hr>
-                <button type="submit" class="btn btn-success w-100">Save CV to Profile</button>
+                <button type="submit" class="btn btn-success w-100" id="cv-submit-btn">
+                    {% if edit_mode %}Save Changes{% else %}Save CV to Profile{% endif %}
+                </button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    const cvForm = document.getElementById('cv-form');
+    const cvSubmitBtn = document.getElementById('cv-submit-btn');
+    if (cvForm && cvSubmitBtn) {
+        cvForm.addEventListener('submit', () => {
+            cvSubmitBtn.disabled = true;
+            cvSubmitBtn.textContent = 'Saving...';
+        });
+    }
+</script>
 {% endblock %}
