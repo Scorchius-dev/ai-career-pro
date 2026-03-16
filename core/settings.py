@@ -4,6 +4,7 @@ Django settings for core project.
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 import dj_database_url
 from dotenv import load_dotenv
 
@@ -16,10 +17,23 @@ load_dotenv()
 # Quick-start development settings
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key')
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+
+
+def _normalize_host(value):
+    """Return host-only value for ALLOWED_HOSTS entries."""
+
+    raw = (value or '').strip()
+    if not raw:
+        return ''
+    if '://' in raw:
+        return (urlparse(raw).netloc or '').split('/')[0].strip()
+    return raw.split('/')[0].strip()
+
+
 ALLOWED_HOSTS = [
-    host.strip()
+    _normalize_host(host)
     for host in os.getenv('ALLOWED_HOSTS', '').split(',')
-    if host.strip()
+    if _normalize_host(host)
 ]
 if not ALLOWED_HOSTS:
     if DEBUG:
@@ -154,6 +168,8 @@ DEFAULT_FROM_EMAIL = os.getenv(
 
 # Security defaults for production-style deployments.
 if not DEBUG:
+    # Heroku sits behind a proxy and forwards protocol in this header.
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = os.getenv(
         'SECURE_SSL_REDIRECT',
         'True',
