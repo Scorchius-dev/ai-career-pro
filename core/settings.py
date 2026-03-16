@@ -25,7 +25,7 @@ if not ALLOWED_HOSTS:
     if DEBUG:
         ALLOWED_HOSTS = ['localhost', '127.0.0.1']
     else:
-        ALLOWED_HOSTS = ['https://ai-career-pro-237ce7da783b.herokuapp.com/']
+        ALLOWED_HOSTS = ['ai-career-pro-237ce7da783b.herokuapp.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -168,8 +168,11 @@ if not DEBUG:
 
     csrf_trusted_origins_raw = os.getenv('CSRF_TRUSTED_ORIGINS', '')
     CSRF_TRUSTED_ORIGINS = [
-        "https://ai-career-pro-237ce7da783b.herokuapp.com/"
         origin.strip()
         for origin in csrf_trusted_origins_raw.split(',')
         if origin.strip()
     ]
+    if not CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS = [
+            'https://ai-career-pro-237ce7da783b.herokuapp.com'
+        ]
