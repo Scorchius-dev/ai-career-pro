@@ -166,6 +166,27 @@ DEFAULT_FROM_EMAIL = os.getenv(
     'no-reply@aicareerpro.local',
 )
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+
 # Security defaults for production-style deployments.
 if not DEBUG:
     # Heroku sits behind a proxy and forwards protocol in this header.
