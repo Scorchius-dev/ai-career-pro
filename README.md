@@ -2,19 +2,6 @@
 
 AI Career Pro is a Django web app that helps users create CV profiles and generate tailored cover letters from job descriptions.
 
-## Assessment Criteria Mapping
-
-This section maps project evidence to the assessment learning outcomes.
-
-- LO1 (Agile planning and design): GitHub Project board + user stories in USER_STORIES.md, responsive UI, accessible structure, Bootstrap-based layout.
-- LO2 (Data model, features, business logic): Custom models, ORM queries, migrations, CRUD, validation, and notifications.
-- LO3 (Authentication and authorization): Signup/login/logout, login-state-aware UI, protected routes, ownership checks.
-- LO4 (Testing): Automated Django tests for auth, CRUD, privacy, and key billing flows.
-- LO5 (Git and secure code management): Git/GitHub workflow with environment variables and secret handling.
-- LO6 (Deployment and security): Heroku deployment with PostgreSQL, WhiteNoise, production security settings, and documented deployment steps.
-- LO7 (Object-based software concepts): Custom Django ORM models and relationships (`CV`, `CoverLetter`, `Profile`).
-- LO8 (AI-assisted workflow): AI used for feature implementation, debugging, UX/performance improvements, and unit-test support.
-
 ## Live App
 
 - Live URL: Add your deployed Heroku URL
@@ -30,18 +17,109 @@ This section maps project evidence to the assessment learning outcomes.
 - Premium PDF export for saved letters
 - Responsive and accessible UI improvements
 
-## UX Design Process (LO1.1, LO1.5)
+## UX Design Process
 
 - Initial design intent: Provide a fast application workflow from CV profile to tailored letter.
 - Accessibility considerations implemented: semantic HTML structure, skip-link usage, clear form labels, and readable feedback states.
 - Responsive behavior implemented: Bootstrap grid/layout, mobile-stacking action controls, and adaptive navigation.
 - Iterative improvements made: clearer call-to-action flow, structured output format for generated letters, and dedicated public homepage.
 
-Add your own artefacts here before submission:
+### Color Palette
 
-- Wireframes: Add links/images.
-- Mockups: Add links/images.
-- Design changes log: Briefly list what changed and why.
+- Primary brand blue: `#0d6efd`
+	- Used for primary actions, navigation emphasis, and key call-to-action elements.
+- Supporting blue shades: Bootstrap `primary` variants
+	- Used across buttons, badges, and links for consistent interaction styling.
+- Body text: `#1f2937`
+	- Used for high readability on light backgrounds.
+- Secondary text: `#6b7280`
+	- Used for placeholders, helper text, and lower-emphasis copy.
+- Surface/background base: `#f8f9fa` and `#ffffff`
+	- Used for page background and card surfaces to maintain contrast and content separation.
+- Success and warning accents: Bootstrap `success` and `warning` colors
+	- Used for plan status, upgrade messaging, and positive/attention states.
+
+### UX Artefacts Checklist
+
+Add links/screenshots for each stage to show your design process clearly.
+
+#### Wireframes (low-fidelity)
+
+- Landing/Home page wireframe: Add image link.
+- Signup/Login page wireframe: Add image link.
+- Dashboard wireframe: Add image link.
+- CV form wireframe: Add image link.
+- Letter generation/result wireframe: Add image link.
+
+What to mention for each wireframe:
+
+- Purpose of the page.
+- Main user actions.
+- Accessibility choices (labels, navigation order, readable spacing).
+
+#### Mockups (high-fidelity)
+
+- Final Home page mockup: Add image link.
+- Final Dashboard mockup: Add image link.
+- Final Generation page mockup: Add image link.
+- Final Mobile view mockup(s): Add image link.
+
+What to mention for each mockup:
+
+- Visual system used (typography, color, spacing).
+- Responsive behavior notes.
+- Any changes from wireframe to final UI.
+
+#### Suggested Folder Structure
+
+Store artefacts in the repository like this:
+
+- docs/ux/wireframes/
+- docs/ux/mockups/
+- docs/ux/screenshots/
+
+#### Suggested File Naming
+
+- wireframe-home-v1.png
+- wireframe-dashboard-v1.png
+- mockup-home-v2.png
+- mockup-dashboard-v2.png
+- mobile-dashboard-v1.png
+
+#### Design Rationale Summary
+
+Add a short paragraph covering:
+
+- Why key layout decisions were made.
+- Why components changed between wireframe and mockup.
+- How feedback/testing influenced final UI.
+
+## Design Change Log
+
+1. Public landing page added at root URL.
+	- Change: Introduced a public homepage and moved the authenticated generator flow to `/app/`.
+	- Reason: New visitors needed context about app purpose before login.
+	- Impact: Better onboarding, clearer navigation, and improved first-time UX.
+
+2. Generated letter output standardized.
+	- Change: Added server-side normalization and structured business-letter formatting.
+	- Reason: Raw AI output could include inconsistent greeting/sign-off patterns and spacing.
+	- Impact: More professional and predictable letter output quality.
+
+3. Mobile responsiveness improvements.
+	- Change: Adjusted navigation/actions to stack and remain usable on smaller screens.
+	- Reason: Dashboard and action controls felt cramped on mobile.
+	- Impact: Improved readability and tap targets on phones/tablets.
+
+4. Deployment runtime stabilization.
+	- Change: Pinned Heroku Python runtime to a stable version compatible with Django.
+	- Reason: Admin route errors occurred with an incompatible runtime version.
+	- Impact: Restored stable admin behavior in production.
+
+5. Static-file serving hardening.
+	- Change: Enabled WhiteNoise middleware and manifest-based static asset storage.
+	- Reason: Ensure reliable CSS/JS asset delivery in Heroku environment.
+	- Impact: Consistent styling and static asset behavior after deploy.
 
 ## Tech Stack
 
@@ -53,7 +131,7 @@ Add your own artefacts here before submission:
 - ReportLab
 - Gunicorn + WhiteNoise
 
-## Database Design and Data Handling (LO1.2, LO2.1, LO7.1)
+## Database Design and Data Handling
 
 - Custom models:
 	- `CV`: Stores reusable candidate profile data.
@@ -67,19 +145,19 @@ Add your own artefacts here before submission:
 - Migrations are used to evolve schema and are tracked in version control.
 - Django ORM is used for all core create/read/update/delete operations with user ownership scoping.
 
-## CRUD and Business Logic (LO2.2)
+## CRUD and Business Logic
 
 - CV CRUD: create, update, delete, and list operations with ownership checks.
 - Cover letter CRUD: generate/save, view, and delete operations per authenticated user.
 - Dashboard search and pagination for letter management.
 
-## Forms and Validation (LO2.4)
+## Forms and Validation
 
 - `SignupForm` includes custom validation (e.g., duplicate email handling).
 - `CVForm` validates required fields and trims whitespace.
 - Templates render clear field-level and form-level error messages.
 
-## User Notifications (LO2.3)
+## User Notifications
 
 - Near-real-time in-app notifications are implemented with Django messages for key events:
 	- account creation
@@ -88,7 +166,7 @@ Add your own artefacts here before submission:
 	- billing and premium state feedback
 - Optional welcome email notification on signup when email is provided.
 
-## Authentication, Authorization, and Access Control (LO3)
+## Authentication, Authorization, and Access Control
 
 - Registration, login, and logout are implemented with Django auth.
 - Login state is reflected in navigation and page actions.
@@ -107,7 +185,7 @@ Typical post-deploy steps:
 1. `python manage.py migrate`
 2. `python manage.py collectstatic --noinput`
 
-## Deployment Procedure (LO6.2)
+## Deployment Procedure
 
 1. Push latest code to GitHub.
 2. Trigger Heroku deployment from connected branch.
@@ -139,7 +217,7 @@ Optional:
 - `EMAIL_BACKEND`
 - `DEFAULT_FROM_EMAIL`
 
-## Security Notes (LO5.2, LO6.3)
+## Security Notes
 
 - Secrets are managed via environment variables and not hardcoded in source.
 - `.env` is used for local development and should remain ignored in Git.
@@ -147,7 +225,7 @@ Optional:
 - Allowed hosts and CSRF trusted origins are configured for deployed domain.
 - Secure cookie and HTTPS-related settings are enabled in production mode.
 
-## Version Control and Project Tracking (LO1.3, LO5.1)
+## Version Control and Project Tracking
 
 - Development was tracked with Git and GitHub commits.
 - Agile planning/tracking was maintained using user stories and a GitHub Project board.
@@ -159,7 +237,7 @@ Run tests locally with:
 
 `python manage.py test`
 
-### Python Test Procedures (LO4.1)
+### Python Test Procedures
 
 Automated tests cover:
 
@@ -169,12 +247,12 @@ Automated tests cover:
 - dashboard filtering
 - key Stripe-related flow behaviors
 
-### JavaScript Testing (LO4.2)
+### JavaScript Testing
 
 - No dedicated JS test framework was added for this submission.
 - JavaScript behavior (form submit states/copy actions/navigation UX) was validated manually during feature testing.
 
-### Testing Documentation (LO4.3)
+### Testing Documentation
 
 - Test strategy: combination of automated Django tests and manual end-to-end verification on deployed app.
 - Expected outcome: no failing tests and working deployed core flows.
@@ -184,7 +262,7 @@ Automated tests cover:
 
 See project on github for user stories, priorities, and acceptance criteria.
 
-## AI Usage Reflection (LO8)
+## AI Usage Reflection
 
 - AI-assisted code creation: Used for accelerating initial implementation of views/templates/forms and refactoring support.
 - AI-assisted debugging: Used to diagnose deployment/runtime issues (e.g., runtime compatibility and environment/config mismatches).
