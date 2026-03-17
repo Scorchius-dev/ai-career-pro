@@ -111,16 +111,6 @@ Add a short paragraph covering:
 	- Reason: Dashboard and action controls felt cramped on mobile.
 	- Impact: Improved readability and tap targets on phones/tablets.
 
-4. Deployment runtime stabilization.
-	- Change: Pinned Heroku Python runtime to a stable version compatible with Django.
-	- Reason: Admin route errors occurred with an incompatible runtime version.
-	- Impact: Restored stable admin behavior in production.
-
-5. Static-file serving hardening.
-	- Change: Enabled WhiteNoise middleware and manifest-based static asset storage.
-	- Reason: Ensure reliable CSS/JS asset delivery in Heroku environment.
-	- Impact: Consistent styling and static asset behavior after deploy.
-
 ## Tech Stack
 
 - Django
@@ -179,6 +169,18 @@ Add a short paragraph covering:
 - runtime.txt pins Python version for Heroku stability
 - Static files served via WhiteNoise
 - Database configured via DATABASE_URL
+
+### Technical Stability Changes
+
+1. Runtime stabilization.
+	- Change: Pinned Heroku Python runtime to a stable version compatible with Django.
+	- Reason: Admin route errors occurred with an incompatible runtime version.
+	- Impact: Restored stable production behavior.
+
+2. Static-file serving hardening.
+	- Change: Enabled WhiteNoise middleware and manifest-based static asset storage.
+	- Reason: Ensure reliable CSS/JS asset delivery in Heroku environment.
+	- Impact: Consistent styling and static asset behavior after deploy.
 
 Typical post-deploy steps:
 
