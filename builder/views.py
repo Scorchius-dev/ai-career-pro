@@ -30,6 +30,15 @@ from .forms import CVForm, SignupForm
 stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', 'sk_test_placeholder')
 
 
+def home(request):
+    """Public landing page explaining the product to first-time visitors."""
+
+    profile = None
+    if request.user.is_authenticated:
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+    return render(request, 'builder/home.html', {'profile': profile})
+
+
 def _profile_from_checkout_session(session):
     """Resolve a user profile from Stripe checkout session metadata."""
 

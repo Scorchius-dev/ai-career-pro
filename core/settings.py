@@ -154,7 +154,7 @@ STRIPE_PREMIUM_MONTHLY_DISPLAY = os.getenv(
 
 # Authentication Redirects
 LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'home'
 
 # Email settings
 EMAIL_BACKEND = os.getenv(

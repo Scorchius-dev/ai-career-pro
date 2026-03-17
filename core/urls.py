@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from builder.views import (
-    signup, index, dashboard, cv_create, cv_update, cv_delete,
+    signup, home, index, dashboard, cv_create, cv_update, cv_delete,
     letter_detail, letter_delete, export_pdf, upgrade_page,
     create_checkout_session, create_billing_portal_session,
     payment_success, payment_cancelled, stripe_webhook,
@@ -16,7 +16,8 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
 
     # Home & Dashboard
-    path('', index, name='index'),
+    path('', home, name='home'),
+    path('app/', index, name='index'),
     path('dashboard/', dashboard, name='dashboard'),
 
     # CV Operations
