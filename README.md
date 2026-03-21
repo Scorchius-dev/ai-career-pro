@@ -4,8 +4,8 @@ AI Career Pro is a Django web app that helps users create CV profiles and genera
 
 ## Live App
 
-- Live URL: Add your deployed Heroku URL
-- Admin URL: Add your deployed Heroku admin URL
+- Live URL: https://ai-career-pro-237ce7da783b.herokuapp.com/
+- Admin URL: admin access restricted to staff/superusers
 
 ## Features
 
